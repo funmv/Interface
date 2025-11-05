@@ -94,12 +94,15 @@
 ### 1️⃣ Run Docker Services
 ```bash
 docker-compose up -d
+```bash
+
 ### 2️⃣ Run python services
 터미널을 3개 열어 각각 수행. 가상환경 kafka310에 들어감
 ```bash
 python producer.py
 python consumer.py
 celery -A worker worker --loglevel=info --pool=solo
+```bash
 
 
 
