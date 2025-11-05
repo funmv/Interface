@@ -69,8 +69,29 @@
 
 ---
 
+## ⚡ Celery & Redis Explained
+
+> ✅ **Celery와 Redis는 Kafka와 직접적인 관련이 없습니다.**  
+> 둘은 “실시간 스트림 처리”가 아니라, **비동기 작업(Task) 처리**를 담당합니다.
+
+- **Redis**는 Celery가 해야 할 일을 잠시 담아두는 **메시지 중계소(Message Queue)** 입니다.  
+- **Celery**는 실제로 그 일을 처리하는 **주체(Worker)** 입니다.  
+- 이 구조를 사용하는 이유는 **고장(장애)에 대비하고, 처리 부하를 분리하기 위해서**입니다.
+
+### 🔹 동작 원리
+
+1. `process_new_data.delay()`  
+   → 이 명령이 **Redis에 “할 일(Task)”을 보내는 명령**입니다.  
+2. Redis는 이 Task 메시지를 큐(Queue)에 쌓아둡니다.  
+3. Celery Worker는 Redis 큐를 **실시간 감시**하면서, 새 메시지가 들어오면 꺼냅니다.  
+4. Worker는 메시지 안에 지정된 함수(`@app.task`로 정의된 함수)를 실행합니다.  
+   - 즉, 실제 “일하는 로직”은 `worker.py` 안의 `app.task`에 정의되어 있습니다.
+     
+---
+
 ## 🧰 How to Run (Development Environment)
 
 ### 1️⃣ Run Docker Services
 ```bash
 docker-compose up -d
+
